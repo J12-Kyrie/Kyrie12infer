@@ -17,7 +17,7 @@ services:
       - NCCL_IB_DISABLE=1
       - NCCL_P2P_DISABLE=1
     volumes:
-      - ./nanovllm/qwen3_0.6b:/app/nanovllm/qwen3_0.6b:ro
+      - ./kyrie12infer/qwen3_0.6b:/app/kyrie12infer/qwen3_0.6b:ro
       - ./logs:/app/logs
     ports:
       - "8001:8000"

@@ -1,11 +1,11 @@
 version: '3.8'
 
 services:
-  nano-vllm:
+  Kyrie12infer:
     build:
       context: .
       dockerfile: Dockerfile
-    container_name: nano-vllm
+    container_name: Kyrie12infer
     runtime: nvidia
     environment:
       - NVIDIA_VISIBLE_DEVICES=all
@@ -17,7 +17,7 @@ services:
       - NCCL_IB_DISABLE=1
       - NCCL_P2P_DISABLE=1
     volumes:
-      - ./nanovllm/qwen3_0.6b:/app/nanovllm/qwen3_0.6b:ro
+      - ./kyrie12infer/qwen3_0.6b:/app/kyrie12infer/qwen3_0.6b:ro
       - ./logs:/app/logs
     ports:
       - "8000:8000"

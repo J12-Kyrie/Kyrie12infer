@@ -10,7 +10,7 @@ def main():
     max_input_len = 1024
     max_ouput_len = 1024
 
-    path = os.path.expanduser("./nanovllm/qwen3_0.6b/")
+    path = os.path.expanduser("./kyrie12infer/qwen3_0.6b/")
     llm = LLM(path, enforce_eager=False, max_model_len=4096, tensor_parallel_size=2)
 
     prompt_token_ids = [[randint(0, 10000) for _ in range(randint(100, max_input_len))] for _ in range(num_seqs)]

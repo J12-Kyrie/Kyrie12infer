@@ -1,10 +1,10 @@
 import os
-from nanovllm import LLM, SamplingParams
+from kyrie12infer import LLM, SamplingParams
 from transformers import AutoTokenizer
 
 
 def main():
-    path = "./nanovllm/qwen3_0.6b/"
+    path = "./kyrie12infer/qwen3_0.6b/"
     tokenizer = AutoTokenizer.from_pretrained(path)
     llm = LLM(path, enforce_eager=True, tensor_parallel_size=1)
 

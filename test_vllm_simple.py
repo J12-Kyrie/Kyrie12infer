@@ -14,7 +14,7 @@ def main():
     
     try:
         # 模型路径
-        model_path = "./nanovllm/qwen3_0.6b/"
+        model_path = "./kyrie12infer/qwen3_0.6b/"
         print(f"📂 加载模型: {model_path}")
         
         # 创建LLM实例

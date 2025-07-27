@@ -4,12 +4,12 @@ import torch.distributed as dist
 from multiprocessing.synchronize import Event
 from multiprocessing.shared_memory import SharedMemory
 
-from nanovllm.config import Config
-from nanovllm.engine.sequence import Sequence
-from nanovllm.models.qwen3 import Qwen3ForCausalLM
-from nanovllm.layers.sampler import Sampler
-from nanovllm.utils.context import set_context, get_context, reset_context
-from nanovllm.utils.loader import load_model
+from kyrie12infer.config import Config
+from kyrie12infer.engine.sequence import Sequence
+from kyrie12infer.models.qwen3 import Qwen3ForCausalLM
+from kyrie12infer.layers.sampler import Sampler
+from kyrie12infer.utils.context import set_context, get_context, reset_context
+from kyrie12infer.utils.loader import load_model
 
 
 class ModelRunner:
@@ -40,11 +40,11 @@ class ModelRunner:
 
         if self.world_size > 1:
             if rank == 0:
-                self.shm = SharedMemory(name="nanovllm", create=True, size=2**20)
+                self.shm = SharedMemory(name="kyrie12infer", create=True, size=2**20)
                 dist.barrier()
             else:
                 dist.barrier()
-                self.shm = SharedMemory(name="nanovllm")
+                self.shm = SharedMemory(name="kyrie12infer")
                 self.loop()
 
     def exit(self):

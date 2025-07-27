@@ -1,15 +1,15 @@
-# nano-vLLM vs vLLM 性能对比测试
+# Kyrie12infer vs vLLM 性能对比测试
 
-本文档介绍如何使用提供的工具对比 nano-vLLM 和 vLLM 在 Qwen3-0.6B 模型上的推理性能。
+本文档介绍如何使用提供的工具对比 Kyrie12infer 和 vLLM 在 Qwen3-0.6B 模型上的推理性能。
 
 ## 📁 文件说明
 
 ### 核心文件
-- `bench.py` - nano-vLLM 基准测试脚本
+- `bench.py` - Kyrie12infer 基准测试脚本
 - `bench_vllm.py` - vLLM 基准测试脚本
-- `Dockerfile` - nano-vLLM Docker 配置
+- `Dockerfile` - Kyrie12infer Docker 配置
 - `Dockerfile.vllm` - vLLM Docker 配置
-- `docker-compose.yml` - nano-vLLM 容器编排
+- `docker-compose.yml` - Kyrie12infer 容器编排
 - `docker-compose.vllm.yml` - vLLM 容器编排
 
 ### 对比工具
@@ -35,7 +35,7 @@
 
 ### 方法二：手动运行
 
-#### 1. 启动 nano-vLLM 容器
+#### 1. 启动 Kyrie12infer 容器
 ```bash
 sudo docker compose up --build -d
 ```
@@ -51,7 +51,7 @@ sudo docker compose -f docker-compose.vllm.yml up --build -d
 docker ps
 
 # 查看启动日志
-docker logs nano-vllm
+docker logs Kyrie12infer
 docker logs vllm-qwen3
 ```
 
@@ -87,7 +87,7 @@ python3 benchmark_comparison.py
 - 相同的环境变量
 
 ### 端口映射
-- nano-vLLM: 8000 → 8000
+- Kyrie12infer: 8000 → 8000
 - vLLM: 8000 → 8001
 
 ## 📈 结果解读
@@ -103,13 +103,13 @@ python3 benchmark_comparison.py
 ============================================================
 🏆 性能对比结果
 ============================================================
-指标                 nano-vLLM       vLLM            差异           
+指标                 Kyrie12infer       vLLM            差异           
 ------------------------------------------------------------
 吞吐量 (tok/s)        7738.67         6234.56         +24.1%
 执行时间 (s)          16.45           20.42           -19.4%
 
 ============================================================
-🎯 结论: nano-vLLM 在吞吐量上领先 24.1%
+🎯 结论: Kyrie12infer 在吞吐量上领先 24.1%
 ============================================================
 ```
 
@@ -118,7 +118,7 @@ python3 benchmark_comparison.py
 ### 容器启动失败
 ```bash
 # 查看详细错误日志
-docker logs nano-vllm
+docker logs Kyrie12infer
 docker logs vllm-qwen3
 
 # 检查 GPU 可用性
@@ -149,8 +149,8 @@ sudo docker compose down
 sudo docker compose -f docker-compose.vllm.yml down
 
 # 删除镜像（可选）
-sudo docker rmi nanovllm-nano-vllm
-sudo docker rmi nanovllm-vllm
+sudo docker rmi kyrie12infer-Kyrie12infer
+sudo docker rmi kyrie12infer-vllm
 
 # 清理未使用的资源
 sudo docker system prune
@@ -166,7 +166,7 @@ sudo docker system prune
 - `tensor_parallel_size`: GPU 并行度
 
 ### 使用不同模型
-1. 将模型文件放在 `nanovllm/` 目录下
+1. 将模型文件放在 `kyrie12infer/` 目录下
 2. 修改脚本中的模型路径
 3. 更新 Docker 卷映射
 

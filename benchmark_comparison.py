@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """
-性能对比脚本：nano-vLLM vs vLLM
+性能对比脚本：Kyrie12infer vs vLLM
 运行两个推理引擎的基准测试并对比结果
 """
 
@@ -94,7 +94,7 @@ def print_comparison(nano_result: Dict[str, float], vllm_result: Dict[str, float
     print("🏆 性能对比结果")
     print(f"{'='*60}")
     
-    print(f"{'指标':<20} {'nano-vLLM':<15} {'vLLM':<15} {'差异':<15}")
+    print(f"{'指标':<20} {'Kyrie12infer':<15} {'vLLM':<15} {'差异':<15}")
     print("-" * 60)
     
     # 吞吐量对比
@@ -114,7 +114,7 @@ def print_comparison(nano_result: Dict[str, float], vllm_result: Dict[str, float
     # 总结
     print(f"\n{'='*60}")
     if nano_throughput > vllm_throughput:
-        winner = "nano-vLLM"
+        winner = "Kyrie12infer"
         advantage = throughput_diff
     else:
         winner = "vLLM"
@@ -125,12 +125,12 @@ def print_comparison(nano_result: Dict[str, float], vllm_result: Dict[str, float
 
 
 def main():
-    print("🚀 nano-vLLM vs vLLM 性能对比测试")
+    print("🚀 Kyrie12infer vs vLLM 性能对比测试")
     print("确保两个容器都在运行中...")
     
     # 检查容器状态
     containers = {
-        "nano-vllm": "nano-vLLM",
+        "Kyrie12infer": "Kyrie12infer",
         "vllm-qwen3": "vLLM"
     }
     
@@ -143,7 +143,7 @@ def main():
             print(f"✅ 容器 {container_name} ({description}) 正在运行")
     
     # 运行基准测试
-    nano_result = run_benchmark("nano-vllm", "nano-vLLM")
+    nano_result = run_benchmark("Kyrie12infer", "Kyrie12infer")
     vllm_result = run_benchmark("vllm-qwen3", "vLLM")
     
     # 检查结果并对比
@@ -152,7 +152,7 @@ def main():
     else:
         print("\n❌ 无法完成对比，某些测试失败")
         if not nano_result:
-            print("- nano-vLLM 测试失败")
+            print("- Kyrie12infer 测试失败")
         if not vllm_result:
             print("- vLLM 测试失败")
 
