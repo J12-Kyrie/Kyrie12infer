@@ -193,3 +193,7 @@ cython_debug/
 #  refer to https://docs.cursor.com/context/ignore-files
 .cursorignore
 .cursorindexingignore
+
+# Model files (too large for GitHub)
+*.safetensors
+kyrie12infer/qwen3_0.6b/model.safetensors
