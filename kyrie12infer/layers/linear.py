@@ -2,6 +2,7 @@ import torch
 from torch import nn
 import torch.nn.functional as F
 import torch.distributed as dist
+from kyrie12infer.kernels import sgemm as ext_sgemm, available as ext_available
 
 
 def divide(numerator, denominator):
@@ -49,6 +50,12 @@ class ReplicatedLinear(LinearBase):
         param.data.copy_(loaded_weight)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if ext_available() and x.is_cuda and x.dtype == torch.float32 and self.weight.dtype == torch.float32 and self.bias is None:
+            # x: [*, in], weight: [out, in]
+            x2d = x.view(-1, self.input_size)
+            y2d = ext_sgemm(x2d, self.weight.t().contiguous())
+            y = y2d.view(*x.shape[:-1], self.output_size)
+            return y
         return F.linear(x, self.weight, self.bias)
 
 
@@ -80,6 +87,11 @@ class ColumnParallelLinear(LinearBase):
         param_data.copy_(loaded_weight)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
+        if ext_available() and x.is_cuda and x.dtype == torch.float32 and self.weight.dtype == torch.float32 and self.bias is None:
+            x2d = x.view(-1, self.input_size)
+            y2d = ext_sgemm(x2d, self.weight.t().contiguous())
+            y = y2d.view(*x.shape[:-1], self.output_size_per_partition)
+            return y
         return F.linear(x, self.weight, self.bias)
 
 
@@ -168,7 +180,12 @@ class RowParallelLinear(LinearBase):
         param_data.copy_(loaded_weight)
 
     def forward(self, x: torch.Tensor) -> torch.Tensor:
-        y = F.linear(x, self.weight, self.bias if self.tp_rank == 0 else None)
+        if ext_available() and x.is_cuda and x.dtype == torch.float32 and self.weight.dtype == torch.float32 and (self.bias is None or self.tp_rank == 0):
+            x2d = x.view(-1, self.input_size_per_partition)
+            y2d = ext_sgemm(x2d, self.weight.t().contiguous())
+            y = y2d.view(*x.shape[:-1], self.output_size)
+        else:
+            y = F.linear(x, self.weight, self.bias if self.tp_rank == 0 else None)
         if self.tp_size > 1:
             dist.all_reduce(y)
         return y

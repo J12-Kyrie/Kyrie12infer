@@ -10,6 +10,7 @@
 - 📊 **性能对比**：内置vLLM性能对比工具
 - 🐳 **Docker支持**：完整的容器化部署方案
 - ⚡ **内存优化**：高效的KV缓存和内存池管理
+- 🧩 **第二种引擎实现（可选）**：内置可切换的自定义CUDA算子（RMSNorm/SGEMM/Reduce）路径，零侵入切换
 
 ## 🚀 快速开始
 
@@ -20,6 +21,33 @@ git clone https://github.com/J12-Kyrie/Kyrie12infer.git
 cd Kyrie12infer
 pip install -e .
 ```
+
+### 启用第二种引擎实现（自定义CUDA算子）
+
+我们提供一套可选的自定义 CUDA 扩展（JIT 构建），在 RMSNorm 与 Linear 中替换关键算子：
+
+- RMSNorm 前向：自定义 `rmsnorm`（基于块内归约+rsqrt）；
+- 线性层 GEMM：自定义 `sgemm`（示例内核，可替换为高性能版本）；
+- 通用 reduce 示例：`reduce_sum`；
+
+启用方式（Windows PowerShell / Linux Bash 类似）：
+
+```powershell
+$env:KYRIE_USE_EXT="1"   # or export KYRIE_USE_EXT=1
+python -c "import kyrie12infer; print('ext available? ', kyrie12infer.kernels.available())"
+```
+
+首次启用会触发 JIT 构建，依赖 NVCC 与与 PyTorch 匹配的 CUDA Toolkit。若只想先验证 CPU 或未安装 CUDA，可不设置该变量（默认关闭）。
+
+目录：`kyrie12infer/kernels/` 包含以下文件：
+
+- `ops.cpp`：PyBind 绑定；
+- `reduce.cu`：块级归约示例；
+- `rmsnorm.cu`：RMSNorm 前向实现；
+- `sgemm.cu`：示例 SGEMM 实现；
+- `__init__.py`：按需 JIT 构建与 Python 端封装。
+
+在 `layers/layernorm.py` 与 `layers/linear.py` 中，当 `KYRIE_USE_EXT=1` 且 CUDA 可用、数据为 float32 时，会自动走自定义路径；否则回退到原有实现。
 
 ### 基本使用
 
@@ -39,6 +67,15 @@ outputs = llm.generate(prompts, sampling_params)
 for output in outputs:
     print(f"Prompt: {output.prompt}")
     print(f"Generated text: {output.outputs[0].text}")
+```
+
+如需开启第二种引擎：
+
+```python
+import os
+os.environ["KYRIE_USE_EXT"] = "1"
+from kyrie12infer import LLM, SamplingParams
+# 其余同上
 ```
 
 ## 🐳 Docker部署
@@ -84,6 +121,7 @@ Kyrie12infer/
 │   ├── layers/               # 神经网络层实现
 │   ├── models/               # 模型定义
 │   └── utils/                # 工具函数
+│   └── kernels/              # 自定义 CUDA 扩展（第二种引擎）
 ├── bench.py                  # Kyrie12infer基准测试
 ├── bench_vllm.py            # vLLM基准测试
 ├── benchmark_comparison.py   # 性能对比脚本
@@ -112,6 +150,13 @@ llm = LLM(model_path, tensor_parallel_size=1)
 # 多GPU（推荐）
 llm = LLM(model_path, tensor_parallel_size=2)
 ```
+
+### 第二种引擎依赖与常见问题
+
+- 需要安装与 PyTorch 匹配的 CUDA Toolkit，并可找到 `nvcc`；
+- Windows 需安装 VS Build Tools；
+- 首次运行会 JIT 编译，时间随机器而异；
+- 若只想先跑通，保持默认（不设置 `KYRIE_USE_EXT`）即可。
 
 ## 📚 API文档
 

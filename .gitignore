@@ -1,3 +1,41 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Build artifacts
+build/
+dist/
+*.egg-info/
+*.so
+*.dll
+*.lib
+*.exp
+
+# IDE / OS
+.vscode/
+.vs/
+.idea/
+.DS_Store
+
+# CUDA / JIT cache
+.cache/
+*.ptx
+
+# Logs / data
+*.log
+*.csv
+
+# Local envs
+docker_env/
+.venv/
+venv/
+
+# Misc
+*.swp
+*.tmp
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
